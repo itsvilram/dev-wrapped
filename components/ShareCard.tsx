@@ -105,8 +105,10 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 // Ask GitHub for a small avatar (the `s` parameter) instead of the full size.
+// Other URLs (like the inline image the tests use) are left as they are.
 function avatarUrl(url: string): string {
   const small = new URL(url);
+  if (small.protocol !== "https:") return url;
   small.searchParams.set("s", "280");
   return small.toString();
 }

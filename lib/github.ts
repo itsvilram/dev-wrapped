@@ -2,7 +2,8 @@ import "server-only";
 import type { GitHubData, GitHubUser } from "./types";
 import { isValidUsername } from "./username";
 
-const API_URL = "https://api.github.com";
+// End-to-end tests point this at a local fake GitHub (e2e/mock-github.mjs).
+const API_URL = process.env.GITHUB_API_URL ?? "https://api.github.com";
 const CACHE_SECONDS = 60 * 60;
 // The public events API returns at most 300 events: 3 pages of 100.
 const EVENT_PAGES = 3;
