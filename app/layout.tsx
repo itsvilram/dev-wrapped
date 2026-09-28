@@ -7,7 +7,14 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+// Link previews need full URLs for images. Vercel sets this variable in
+// production; locally we fall back to the dev server.
+const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Dev Wrapped",
   description: "Your last 12 months on GitHub, as an animated story.",
 };

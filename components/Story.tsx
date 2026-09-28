@@ -218,7 +218,13 @@ function buildSlides(stats: WrappedStats, timeZone: string | null): Slide[] {
     {
       label: "Summary",
       background: "from-indigo-600 to-neutral-950",
-      content: <SummarySlide stats={stats} personality={personality} />,
+      content: (
+        <SummarySlide
+          stats={stats}
+          personality={personality}
+          timeZone={timeZone}
+        />
+      ),
     },
   ];
 }

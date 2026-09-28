@@ -5,6 +5,7 @@ import {
   formatNumber,
   formatPercent,
   plural,
+  validTimeZone,
 } from "./format";
 
 describe("format helpers", () => {
@@ -28,6 +29,13 @@ describe("format helpers", () => {
     expect(plural(1, "day")).toBe("day");
     expect(plural(0, "day")).toBe("days");
     expect(plural(2, "commit")).toBe("commits");
+  });
+
+  it("accepts real timezones and falls back to UTC otherwise", () => {
+    expect(validTimeZone("Asia/Kolkata")).toBe("Asia/Kolkata");
+    expect(validTimeZone("Mars/Olympus")).toBe("UTC");
+    expect(validTimeZone("")).toBe("UTC");
+    expect(validTimeZone(null)).toBe("UTC");
   });
 
   it("maps GitHub weekday numbers to names", () => {

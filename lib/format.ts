@@ -27,3 +27,15 @@ export function formatNumber(value: number): string {
 export function plural(count: number, word: string): string {
   return count === 1 ? word : `${word}s`;
 }
+
+// Returns `value` if it is a real IANA timezone (e.g. "Asia/Kolkata"),
+// otherwise UTC. Protects the card route from bad ?tz= values.
+export function validTimeZone(value: string | null): string {
+  if (!value) return "UTC";
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: value });
+    return value;
+  } catch {
+    return "UTC";
+  }
+}

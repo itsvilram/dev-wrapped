@@ -2,11 +2,16 @@ import Image from "next/image";
 import { formatNumber, plural } from "@/lib/format";
 import { PERSONALITIES } from "@/lib/personalities";
 import type { Personality, WrappedStats } from "@/lib/types";
+import { ShareButtons } from "../ShareButtons";
 import { SlideLayout } from "./SlideLayout";
 
-type Props = { stats: WrappedStats; personality: Personality | null };
+type Props = {
+  stats: WrappedStats;
+  personality: Personality | null;
+  timeZone: string | null;
+};
 
-export function SummarySlide({ stats, personality }: Props) {
+export function SummarySlide({ stats, personality, timeZone }: Props) {
   const items = [
     { label: "Contributions", value: formatNumber(stats.totalContributions) },
     {
@@ -49,6 +54,7 @@ export function SummarySlide({ stats, personality }: Props) {
           ))}
         </dl>
       </div>
+      <ShareButtons login={stats.login} timeZone={timeZone} />
     </SlideLayout>
   );
 }
