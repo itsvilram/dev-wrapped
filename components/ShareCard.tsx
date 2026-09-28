@@ -48,7 +48,7 @@ export function ShareCard({ stats, personality }: Props) {
             {stats.name ?? stats.login}
           </div>
           <div style={{ fontSize: 32, opacity: 0.8 }}>
-            {`@${stats.login} · GitHub Wrapped, last 12 months`}
+            {`@${stats.login} · GitHub Wrapped, ${stats.year ?? "last 12 months"}`}
           </div>
         </div>
       </div>

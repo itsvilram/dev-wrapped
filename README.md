@@ -25,6 +25,8 @@
 8. Coder personality: Night Owl, Early Bird, Weekend Warrior, Streak Machine, Polyglot or Steady Builder
 9. Summary card with **Download** and **Share** buttons
 
+Pick **any year** since the user joined GitHub from the intro slide (or add `?year=2024` to the URL); the default is the last 12 months.
+
 Navigate with a tap (left third goes back), the arrow keys, Space, or the on-screen buttons.
 
 ## Tech stack
@@ -55,6 +57,7 @@ A longer write-up with an architecture diagram and the design trade-offs is in [
 ## Known limitations
 
 - The busiest hour uses GitHub's public events API, which only returns about the **last 30 days** (max 300 events), and only public pushes.
+- **Past years** have no busiest hour and no "current" streak, because GitHub only keeps about 30 days of event times.
 - Times are shown in the **viewer's** timezone, not the coder's (GitHub does not expose it). The link preview image has no viewer, so it uses UTC.
 - Organizations are not supported, only personal accounts.
 - Languages and stars are measured over the user's 100 most-starred non-fork repos, top 10 languages each.

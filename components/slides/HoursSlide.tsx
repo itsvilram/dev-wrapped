@@ -3,13 +3,20 @@ import { busiestHour, hourHistogram } from "@/lib/stats";
 import { SlideLayout } from "./SlideLayout";
 
 type Props = {
-  pushTimes: string[];
+  pushTimes: string[] | null; // null: no hour data for this period
+  year: number | null;
   busiestWeekday: number | null;
   timeZone: string | null; // null until the browser has told us
 };
 
-export function HoursSlide({ pushTimes, busiestWeekday, timeZone }: Props) {
-  const histogram = timeZone ? hourHistogram(pushTimes, timeZone) : null;
+export function HoursSlide({
+  pushTimes,
+  year,
+  busiestWeekday,
+  timeZone,
+}: Props) {
+  const histogram =
+    timeZone && pushTimes ? hourHistogram(pushTimes, timeZone) : null;
   const hour = histogram ? busiestHour(histogram) : null;
   const weekday = busiestWeekday === null ? null : WEEKDAYS[busiestWeekday];
 
@@ -17,13 +24,19 @@ export function HoursSlide({ pushTimes, busiestWeekday, timeZone }: Props) {
     <SlideLayout
       eyebrow="When you code"
       footnote={
-        timeZone &&
-        `Hours from your last ${pushTimes.length} public pushes (about 30 days), in your timezone (${timeZone}).`
+        pushTimes === null
+          ? `GitHub only keeps about 30 days of activity times, so there is no hour data for ${year}.`
+          : timeZone &&
+            `Hours from your last ${pushTimes.length} public pushes (about 30 days), in your timezone (${timeZone}).`
       }
     >
       {histogram === null || hour === null ? (
         <p className="text-2xl font-semibold">
-          {timeZone ? "No public pushes in the last 30 days." : "…"}
+          {pushTimes === null
+            ? "Busiest hour not available"
+            : timeZone
+              ? "No public pushes in the last 30 days."
+              : "…"}
         </p>
       ) : (
         <>

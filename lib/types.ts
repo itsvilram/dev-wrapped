@@ -20,6 +20,7 @@ export type GitHubUser = {
   login: string;
   name: string | null;
   avatarUrl: string;
+  createdAt: string; // when the account was made, e.g. "2011-05-25T18:18:31Z"
   contributionsCollection: {
     totalCommitContributions: number;
     totalPullRequestContributions: number;
@@ -38,7 +39,11 @@ export type GitHubUser = {
 
 export type GitHubData = {
   user: GitHubUser;
-  pushTimes: string[]; // ISO timestamps in UTC, e.g. "2026-03-14T21:05:00Z"
+  // ISO timestamps in UTC, e.g. "2026-03-14T21:05:00Z".
+  // null for a past year: GitHub only keeps about 30 days of events.
+  pushTimes: string[] | null;
+  year: number | null; // null = the last 12 months
+  currentYear: number; // decided once on the server, so every render agrees
 };
 
 // Shapes of the numbers we compute from that data (see lib/stats.ts).
@@ -70,6 +75,9 @@ export type WrappedStats = {
   login: string;
   name: string | null;
   avatarUrl: string;
+  joinedYear: number;
+  year: number | null; // null = the last 12 months
+  currentYear: number;
   totalContributions: number;
   languages: LanguageShare[]; // every language, biggest first
   busiestWeekday: number | null; // 0 = Sunday, null when there are no contributions
@@ -80,6 +88,6 @@ export type WrappedStats = {
   activity: Activity;
   stars: number; // stars on the user's own public repos (all time)
   // Kept raw: the hour depends on the viewer's timezone, so it is
-  // worked out later with hourHistogram().
-  pushTimes: string[];
+  // worked out later with hourHistogram(). null = not available.
+  pushTimes: string[] | null;
 };

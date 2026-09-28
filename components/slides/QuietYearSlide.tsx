@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { periodLabel } from "@/lib/period";
 import { SlideLayout } from "./SlideLayout";
 
 // Replaces the stat slides for users with no public contributions.
-export function QuietYearSlide() {
+export function QuietYearSlide({ year }: { year: number | null }) {
   return (
     <SlideLayout
-      eyebrow="In the last 12 months"
+      eyebrow={`In ${periodLabel(year)}`}
       footnote="Private contributions only count if the user shows them on their GitHub profile."
     >
       <p className="text-7xl" aria-hidden="true">

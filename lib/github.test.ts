@@ -36,7 +36,7 @@ describe("getGitHubData", () => {
       ]),
     );
 
-    const data = await getGitHubData("octo");
+    const data = await getGitHubData("octo", null);
 
     expect(data.user.login).toBe("octo");
     expect(data.pushTimes).toEqual(["2026-09-01T22:10:00Z"]);
@@ -51,7 +51,7 @@ describe("getGitHubData", () => {
       json(fullPage),
     );
 
-    const data = await getGitHubData("octo");
+    const data = await getGitHubData("octo", null);
 
     expect(data.pushTimes).toHaveLength(300);
     expect(fetchMock).toHaveBeenCalledTimes(4); // 1 GraphQL + 3 event pages
@@ -60,7 +60,7 @@ describe("getGitHubData", () => {
   it("sends the token only in the Authorization header", async () => {
     const fetchMock = mockGitHub(json({ data: { user } }), () => json([]));
 
-    await getGitHubData("octo");
+    await getGitHubData("octo", null);
 
     const [url, init] = fetchMock.mock.calls[0] as unknown as [
       string,
@@ -79,7 +79,7 @@ describe("getGitHubData", () => {
       () => json({}, { status: 404 }),
     );
 
-    await expect(getGitHubData("ghost")).rejects.toBeInstanceOf(
+    await expect(getGitHubData("ghost", null)).rejects.toBeInstanceOf(
       UserNotFoundError,
     );
   });
@@ -87,7 +87,7 @@ describe("getGitHubData", () => {
   it("throws UserNotFoundError for an invalid username without calling GitHub", async () => {
     const fetchMock = mockGitHub(json({}), () => json([]));
 
-    await expect(getGitHubData("../admin")).rejects.toBeInstanceOf(
+    await expect(getGitHubData("../admin", null)).rejects.toBeInstanceOf(
       UserNotFoundError,
     );
     expect(fetchMock).not.toHaveBeenCalled();
@@ -98,7 +98,9 @@ describe("getGitHubData", () => {
       json({}, { status: 403, headers: { "x-ratelimit-remaining": "0" } }),
     );
 
-    await expect(getGitHubData("octo")).rejects.toBeInstanceOf(RateLimitError);
+    await expect(getGitHubData("octo", null)).rejects.toBeInstanceOf(
+      RateLimitError,
+    );
   });
 
   it("throws RateLimitError when GraphQL reports RATE_LIMITED", async () => {
@@ -107,7 +109,9 @@ describe("getGitHubData", () => {
       () => json([]),
     );
 
-    await expect(getGitHubData("octo")).rejects.toBeInstanceOf(RateLimitError);
+    await expect(getGitHubData("octo", null)).rejects.toBeInstanceOf(
+      RateLimitError,
+    );
   });
 
   it("throws GitHubRequestError when the network fails", async () => {
@@ -116,7 +120,7 @@ describe("getGitHubData", () => {
       vi.fn().mockRejectedValue(new TypeError("fetch failed")),
     );
 
-    await expect(getGitHubData("octo")).rejects.toBeInstanceOf(
+    await expect(getGitHubData("octo", null)).rejects.toBeInstanceOf(
       GitHubRequestError,
     );
   });
@@ -124,8 +128,68 @@ describe("getGitHubData", () => {
   it("throws GitHubRequestError for a server error", async () => {
     mockGitHub(json({}, { status: 502 }), () => json([]));
 
-    await expect(getGitHubData("octo")).rejects.toBeInstanceOf(
+    await expect(getGitHubData("octo", null)).rejects.toBeInstanceOf(
       GitHubRequestError,
     );
+  });
+});
+
+describe("getGitHubData with a year", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-01-05T12:00:00Z"));
+  });
+  afterEach(() => vi.useRealTimers());
+
+  function graphqlVariables(fetchMock: ReturnType<typeof mockGitHub>) {
+    const [, init] = fetchMock.mock.calls[0] as unknown as [
+      string,
+      RequestInit,
+    ];
+    return JSON.parse(init.body as string).variables;
+  }
+
+  it("asks GraphQL for the last 12 months when there is no year", async () => {
+    const fetchMock = mockGitHub(json({ data: { user } }), () => json([]));
+
+    await getGitHubData("octo", null);
+
+    expect(graphqlVariables(fetchMock)).toEqual({
+      login: "octo",
+      from: null,
+      to: null,
+    });
+  });
+
+  it("asks for the whole calendar year and skips events for a past year", async () => {
+    const fetchMock = mockGitHub(json({ data: { user } }), () => json([]));
+
+    const data = await getGitHubData("octo", 2024);
+
+    expect(graphqlVariables(fetchMock)).toEqual({
+      login: "octo",
+      from: "2024-01-01T00:00:00Z",
+      to: "2024-12-31T23:59:59Z",
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1); // GraphQL only, no events API
+    expect(data).toMatchObject({
+      pushTimes: null,
+      year: 2024,
+      currentYear: 2026,
+    });
+  });
+
+  it("keeps only this year's pushes for the current year", async () => {
+    mockGitHub(json({ data: { user } }), () =>
+      json([
+        { type: "PushEvent", created_at: "2026-01-02T09:00:00Z" },
+        { type: "PushEvent", created_at: "2025-12-30T09:00:00Z" },
+      ]),
+    );
+
+    const data = await getGitHubData("octo", 2026);
+
+    expect(data.pushTimes).toEqual(["2026-01-02T09:00:00Z"]);
+    expect(data.currentYear).toBe(2026);
   });
 });

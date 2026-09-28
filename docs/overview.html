@@ -453,6 +453,7 @@ e2e/
       <h2 class="sec-title"><span class="sn">06</span> &nbsp;Known limitations</h2>
       <ul>
         <li><b>Busiest hour covers about 30 days.</b> The public events API returns at most 300 events and, as measured, only about the last 30 days, not the full year. The slide says so.</li>
+        <li><b>Past years have no busiest hour.</b> <code>?year=2024</code> sends <code>from</code>/<code>to</code> to GraphQL for that calendar year, but the events API only covers ~30 days, so for a finished year the events call is skipped (<code>pushTimes: null</code>), the hour slide says so, and the personality uses only the non-hour rules. The &ldquo;current streak&rdquo; is hidden too.</li>
         <li><b>Viewer&rsquo;s timezone, not the coder&rsquo;s.</b> See the trade-off above.</li>
         <li><b>Public data only.</b> Private contributions appear in the total only if the user chose to show them on their profile; private repos are not in languages or the top repo.</li>
         <li><b>Organizations are not supported.</b> GraphQL <code>user(login:)</code> returns NOT_FOUND for them, which shows the not-found page.</li>

@@ -45,6 +45,7 @@ function user(login, name, active) {
     login,
     name,
     avatarUrl: AVATAR,
+    createdAt: "2019-04-01T10:00:00Z",
     contributionsCollection: {
       // By type; these add up to the calendar total of 120.
       totalCommitContributions: active ? 95 : 0,

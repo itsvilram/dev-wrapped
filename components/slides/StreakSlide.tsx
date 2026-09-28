@@ -1,10 +1,12 @@
 import { plural } from "@/lib/format";
 import { SlideLayout } from "./SlideLayout";
 
-type Props = { longest: number; current: number };
+// showCurrent is false for a finished year: "current" only means
+// something for a period that ends today.
+type Props = { longest: number; current: number; showCurrent: boolean };
 
-export function StreakSlide({ longest, current }: Props) {
-  const onBestStreak = current > 0 && current === longest;
+export function StreakSlide({ longest, current, showCurrent }: Props) {
+  const onBestStreak = showCurrent && current > 0 && current === longest;
   return (
     <SlideLayout
       eyebrow="Streaks"
@@ -14,9 +16,11 @@ export function StreakSlide({ longest, current }: Props) {
           : "A streak is days in a row with at least one contribution."
       }
     >
-      <div className="grid w-full grid-cols-2 gap-6">
+      <div
+        className={`grid w-full gap-6 ${showCurrent ? "grid-cols-2" : "grid-cols-1"}`}
+      >
         <Stat value={longest} label="Longest streak" />
-        <Stat value={current} label="Current streak" />
+        {showCurrent && <Stat value={current} label="Current streak" />}
       </div>
     </SlideLayout>
   );

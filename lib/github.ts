@@ -1,5 +1,6 @@
 import "server-only";
 import type { GitHubData, GitHubUser } from "./types";
+import { isPastYear, yearRange } from "./period";
 import { isValidUsername } from "./username";
 
 // End-to-end tests point this at a local fake GitHub (e2e/mock-github.mjs).
@@ -14,12 +15,14 @@ export class RateLimitError extends Error {}
 export class GitHubRequestError extends Error {}
 
 const USER_QUERY = /* GraphQL */ `
-  query ($login: String!) {
+  # from/to = null means GitHub's default: the last 12 months.
+  query ($login: String!, $from: DateTime, $to: DateTime) {
     user(login: $login) {
       login
       name
       avatarUrl
-      contributionsCollection {
+      createdAt
+      contributionsCollection(from: $from, to: $to) {
         totalCommitContributions
         totalPullRequestContributions
         totalPullRequestReviewContributions
@@ -74,19 +77,41 @@ type GraphQLResponse = {
 
 type PublicEvent = { type: string; created_at: string };
 
-export async function getGitHubData(login: string): Promise<GitHubData> {
+// year = null for the last 12 months, or a calendar year like 2025.
+export async function getGitHubData(
+  login: string,
+  year: number | null,
+): Promise<GitHubData> {
   if (!isValidUsername(login)) throw new UserNotFoundError(login);
+  const currentYear = new Date().getUTCFullYear();
+  const pastYear = isPastYear(year, currentYear);
+  const range = year === null ? null : yearRange(year);
+
   const [user, pushTimes] = await Promise.all([
-    fetchUser(login),
-    fetchPushTimes(login),
+    fetchUser(login, range),
+    // Events only go back ~30 days, so a past year has none: skip the calls.
+    pastYear ? null : fetchPushTimes(login),
   ]);
-  return { user, pushTimes };
+  // In early January the last 30 days include last December; drop those.
+  // (ISO timestamps in UTC compare correctly as plain strings.)
+  const inRange =
+    pushTimes && range ? pushTimes.filter((t) => t >= range.from) : pushTimes;
+
+  return {
+    user,
+    pushTimes: inRange,
+    year,
+    currentYear,
+  };
 }
 
-async function fetchUser(login: string): Promise<GitHubUser> {
+async function fetchUser(
+  login: string,
+  range: { from: string; to: string } | null,
+): Promise<GitHubUser> {
   const res = await request("/graphql", {
     query: USER_QUERY,
-    variables: { login },
+    variables: { login, from: range?.from ?? null, to: range?.to ?? null },
   });
   const { data, errors = [] } = (await res.json()) as GraphQLResponse;
 

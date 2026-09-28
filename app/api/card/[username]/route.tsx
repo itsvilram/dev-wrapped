@@ -3,6 +3,7 @@ import { CARD_SIZE, ShareCard } from "@/components/ShareCard";
 import { RateLimitError, UserNotFoundError } from "@/lib/github";
 import { personalityFor } from "@/lib/stats";
 import { validTimeZone } from "@/lib/format";
+import { parseYear } from "@/lib/period";
 import { getWrappedStats } from "@/lib/wrapped";
 
 // Browsers and CDNs (Vercel) may keep the PNG for an hour, the same as our
@@ -10,7 +11,8 @@ import { getWrappedStats } from "@/lib/wrapped";
 const CACHE_CONTROL =
   "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400";
 
-// GET /api/card/torvalds?tz=Asia/Kolkata -> 1200x630 PNG summary card.
+// GET /api/card/torvalds?year=2025&tz=Asia/Kolkata -> 1200x630 PNG card.
+// `year` is optional (default: the last 12 months).
 // `tz` decides the busiest hour (and so the personality); link previews
 // have no viewer timezone, so they fall back to UTC.
 export async function GET(
@@ -18,10 +20,12 @@ export async function GET(
   { params }: RouteContext<"/api/card/[username]">,
 ) {
   const { username } = await params;
-  const timeZone = validTimeZone(new URL(request.url).searchParams.get("tz"));
+  const query = new URL(request.url).searchParams;
+  const timeZone = validTimeZone(query.get("tz"));
+  const year = parseYear(query.get("year"), new Date().getUTCFullYear());
 
   try {
-    const stats = await getWrappedStats(username);
+    const stats = await getWrappedStats(username, year);
     return new ImageResponse(
       <ShareCard stats={stats} personality={personalityFor(stats, timeZone)} />,
       { ...CARD_SIZE, headers: { "Cache-Control": CACHE_CONTROL } },

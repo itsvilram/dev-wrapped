@@ -73,6 +73,25 @@ test("enter a username and go through the whole story", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Next slide" })).toBeDisabled();
 });
 
+test("switch to a past year from the intro slide", async ({ page }) => {
+  await page.goto("/octocat", { waitUntil: "networkidle" });
+  await page.getByLabel("Showing").selectOption("2025");
+
+  await expect(page).toHaveURL(/\/octocat\?year=2025$/);
+  await expect(page.getByText("Here is your 2025.")).toBeVisible();
+
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByText("In 2025")).toBeVisible();
+
+  // Past years have no hour data (GitHub keeps ~30 days of events) and no
+  // "current" streak.
+  for (let i = 0; i < 3; i++) await page.keyboard.press("ArrowRight");
+  await expect(page.getByText("Busiest hour not available")).toBeVisible();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByText("Longest streak")).toBeVisible();
+  await expect(page.getByText("Current streak")).toHaveCount(0);
+});
+
 test("the share card is a 1200x630 PNG", async ({ request }) => {
   const response = await request.get("/api/card/octocat?tz=Asia/Kolkata");
   expect(response.status()).toBe(200);

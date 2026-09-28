@@ -13,7 +13,12 @@ import type {
 const SATURDAY = 6;
 const SUNDAY = 0;
 
-export function computeStats({ user, pushTimes }: GitHubData): WrappedStats {
+export function computeStats({
+  user,
+  pushTimes,
+  year,
+  currentYear,
+}: GitHubData): WrappedStats {
   const collection = user.contributionsCollection;
   const { contributionCalendar, commitContributionsByRepository } = collection;
   const days = flattenDays(contributionCalendar.weeks);
@@ -22,6 +27,9 @@ export function computeStats({ user, pushTimes }: GitHubData): WrappedStats {
     login: user.login,
     name: user.name,
     avatarUrl: user.avatarUrl,
+    joinedYear: new Date(user.createdAt).getUTCFullYear(),
+    year,
+    currentYear,
     totalContributions: contributionCalendar.totalContributions,
     languages: languageShares(user.repositories.nodes),
     busiestWeekday: busiestWeekday(days),
@@ -181,7 +189,7 @@ export function personalityFor(
   timeZone: string,
 ): Personality {
   return personality({
-    busiestHour: busiestHour(hourHistogram(stats.pushTimes, timeZone)),
+    busiestHour: busiestHour(hourHistogram(stats.pushTimes ?? [], timeZone)),
     weekendShare: stats.weekendShare,
     longestStreak: stats.longestStreak,
     languages: stats.languages,

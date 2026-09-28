@@ -28,7 +28,7 @@ export function SummarySlide({ stats, personality, timeZone }: Props) {
   ];
 
   return (
-    <SlideLayout eyebrow="Your year in code">
+    <SlideLayout eyebrow={`Your ${stats.year ?? "year"} in code`}>
       <div className="w-full rounded-3xl bg-white/10 p-6 shadow-2xl ring-1 ring-white/20 backdrop-blur">
         <div className="flex items-center gap-4">
           <Image
@@ -54,7 +54,7 @@ export function SummarySlide({ stats, personality, timeZone }: Props) {
           ))}
         </dl>
       </div>
-      <ShareButtons login={stats.login} timeZone={timeZone} />
+      <ShareButtons login={stats.login} year={stats.year} timeZone={timeZone} />
     </SlideLayout>
   );
 }

@@ -307,6 +307,7 @@ describe("computeStats and personalityFor", () => {
     login: "octo",
     name: "Octo Cat",
     avatarUrl: "https://example.com/octo.png",
+    createdAt: "2019-03-02T10:00:00Z",
     contributionsCollection: {
       totalCommitContributions: 5,
       totalPullRequestContributions: 1,
@@ -332,10 +333,18 @@ describe("computeStats and personalityFor", () => {
   };
 
   it("puts every stat together", () => {
-    const stats = computeStats({ user, pushTimes: ["2026-01-05T20:00:00Z"] });
+    const stats = computeStats({
+      user,
+      pushTimes: ["2026-01-05T20:00:00Z"],
+      year: null,
+      currentYear: 2026,
+    });
 
     expect(stats).toMatchObject({
       login: "octo",
+      joinedYear: 2019,
+      year: null,
+      currentYear: 2026,
       totalContributions: 7,
       longestStreak: 3,
       currentStreak: 3,
@@ -353,7 +362,12 @@ describe("computeStats and personalityFor", () => {
   });
 
   it("gives a different personality depending on the viewer's timezone", () => {
-    const stats = computeStats({ user, pushTimes: ["2026-01-05T20:00:00Z"] });
+    const stats = computeStats({
+      user,
+      pushTimes: ["2026-01-05T20:00:00Z"],
+      year: null,
+      currentYear: 2026,
+    });
 
     expect(personalityFor(stats, "UTC")).toBe("Steady Builder"); // 20:00
     expect(personalityFor(stats, "Asia/Kolkata")).toBe("Night Owl"); // 01:30

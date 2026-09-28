@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { useTimeZone } from "@/hooks/useTimeZone";
+import { isPastYear } from "@/lib/period";
 import { personalityFor } from "@/lib/stats";
 import type { WrappedStats } from "@/lib/types";
 import { ProgressBars } from "./ProgressBars";
@@ -180,7 +181,7 @@ function buildSlides(stats: WrappedStats, timeZone: string | null): Slide[] {
       {
         label: "No public activity",
         background: "from-emerald-600 to-teal-950",
-        content: <QuietYearSlide />,
+        content: <QuietYearSlide year={stats.year} />,
       },
     ];
   }
@@ -191,7 +192,12 @@ function buildSlides(stats: WrappedStats, timeZone: string | null): Slide[] {
     {
       label: "Total contributions",
       background: "from-emerald-600 to-teal-950",
-      content: <ContributionsSlide total={stats.totalContributions} />,
+      content: (
+        <ContributionsSlide
+          total={stats.totalContributions}
+          year={stats.year}
+        />
+      ),
     },
     {
       label: "Beyond the total",
@@ -209,6 +215,7 @@ function buildSlides(stats: WrappedStats, timeZone: string | null): Slide[] {
       content: (
         <HoursSlide
           pushTimes={stats.pushTimes}
+          year={stats.year}
           busiestWeekday={stats.busiestWeekday}
           timeZone={timeZone}
         />
@@ -221,6 +228,7 @@ function buildSlides(stats: WrappedStats, timeZone: string | null): Slide[] {
         <StreakSlide
           longest={stats.longestStreak}
           current={stats.currentStreak}
+          showCurrent={!isPastYear(stats.year, stats.currentYear)}
         />
       ),
     },

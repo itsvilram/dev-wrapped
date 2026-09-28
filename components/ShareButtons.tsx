@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { cardPath } from "@/lib/links";
 
-type Props = { login: string; timeZone: string | null };
+type Props = { login: string; year: number | null; timeZone: string | null };
 
-export function ShareButtons({ login, timeZone }: Props) {
+export function ShareButtons({ login, year, timeZone }: Props) {
   const [status, setStatus] = useState<string | null>(null);
-  const cardUrl = `/api/card/${login}${timeZone ? `?tz=${encodeURIComponent(timeZone)}` : ""}`;
+  const cardUrl = cardPath(login, { year, timeZone });
 
   // Uses the phone's share sheet when there is one, otherwise copies the link.
   async function share() {
@@ -35,7 +36,7 @@ export function ShareButtons({ login, timeZone }: Props) {
         {/* Same-origin link, so the `download` attribute saves the PNG. */}
         <a
           href={cardUrl}
-          download={`${login}-dev-wrapped.png`}
+          download={`${login}-dev-wrapped${year ? `-${year}` : ""}.png`}
           className={`${buttonClass} bg-white text-neutral-900 hover:bg-white/85`}
         >
           Download
