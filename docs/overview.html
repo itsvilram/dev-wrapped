@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dev Wrapped &middot; Overview</title>
+<style>
+  :root {
+    --paper:      #eff3f6;
+    --surface:    #ffffff;
+    --surface-2:  #f6f9fb;
+    --ink:        #0f1d2a;
+    --ink-2:      #46596b;
+    --rule:       #c5d2dc;
+    --rule-soft:  #e1e9ef;
+    --accent:     #1b4e88;
+    --accent-2:   #2f6fb8;
+    --accent-soft:#e3edf7;
+    --flag:       #a63a1e;
+    --flag-soft:  #f8e9e3;
+    --ok:         #1c6a4e;
+    --ok-soft:    #e2f0ea;
+    --warn:       #8a6100;
+    --warn-soft:  #f8efd9;
+
+    --font-body: Georgia, "Times New Roman", serif;
+    --font-ui: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: Consolas, "Cascadia Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+    --measure: 74ch;
+    --radius: 3px;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #0c141c;
+      --surface:    #131e28;
+      --surface-2:  #17232e;
+      --ink:        #e7eef4;
+      --ink-2:      #9db0bf;
+      --rule:       #2a3b49;
+      --rule-soft:  #1e2d39;
+      --accent:     #7fb2ec;
+      --accent-2:   #a8cbf5;
+      --accent-soft:#16293d;
+      --flag:       #e8926f;
+      --flag-soft:  #33211a;
+      --ok:         #5cc49a;
+      --ok-soft:    #142d24;
+      --warn:       #d9b25f;
+      --warn-soft:  #2d2413;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:      #0c141c;
+    --surface:    #131e28;
+    --surface-2:  #17232e;
+    --ink:        #e7eef4;
+    --ink-2:      #9db0bf;
+    --rule:       #2a3b49;
+    --rule-soft:  #1e2d39;
+    --accent:     #7fb2ec;
+    --accent-2:   #a8cbf5;
+    --accent-soft:#16293d;
+    --flag:       #e8926f;
+    --flag-soft:  #33211a;
+    --ok:         #5cc49a;
+    --ok-soft:    #142d24;
+    --warn:       #d9b25f;
+    --warn-soft:  #2d2413;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.55;
+  }
+  a { color: var(--accent); }
+
+  .masthead { border-bottom: 1px solid var(--rule); background: var(--surface); padding: 28px 16px 20px; }
+  .masthead-in { max-width: 1180px; margin: 0 auto; }
+  .kicker {
+    font-family: var(--font-ui); font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-2); margin: 0 0 6px;
+  }
+  h1 { font-size: 30px; line-height: 1.15; margin: 0 0 8px; font-weight: 700; }
+  .lede { margin: 0; color: var(--ink-2); max-width: var(--measure); }
+
+  .shell { max-width: 1180px; margin: 0 auto; padding: 0 16px 80px; display: grid; grid-template-columns: 1fr; }
+  @media (min-width: 980px) { .shell { grid-template-columns: 232px 1fr; gap: 34px; align-items: start; } }
+  .rail { display: none; }
+  @media (min-width: 980px) {
+    .rail { display: block; position: sticky; top: 12px; padding-top: 26px; font-family: var(--font-ui); font-size: 13px; }
+    .rail h2 { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 10px; font-weight: 600; }
+    .rail ol { list-style: none; margin: 0; padding: 0; }
+    .rail a { display: block; padding: 5px 8px; border-radius: var(--radius); color: var(--ink-2); text-decoration: none; border-left: 2px solid transparent; }
+    .rail a:hover { background: var(--surface-2); color: var(--ink); border-left-color: var(--accent); }
+  }
+  main { padding-top: 26px; min-width: 0; }
+
+  .note {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent); border-radius: var(--radius);
+    padding: 16px 18px; margin: 0 0 26px;
+  }
+  .note h2 { font-size: 17px; margin: 0 0 8px; }
+  .note p { margin: 0 0 8px; max-width: var(--measure); }
+  .note p:last-child { margin-bottom: 0; }
+
+  .sec-title {
+    font-size: 12px; font-family: var(--font-ui); letter-spacing: .13em;
+    text-transform: uppercase; color: var(--ink-2); font-weight: 600;
+    margin: 40px 0 4px; padding-bottom: 6px; border-bottom: 1px solid var(--rule);
+  }
+  .sec-title .sn { color: var(--accent); }
+  .sec-sub { font-size: 14px; color: var(--ink-2); margin: 10px 0 18px; max-width: var(--measure); }
+  section > p, section > ul, section > ol { max-width: var(--measure); }
+  section li { margin-bottom: 6px; }
+
+  code, kbd { font-family: var(--font-mono); font-size: .855em; }
+  code { background: var(--surface-2); border: 1px solid var(--rule-soft); border-radius: 2px; padding: 0 3px; word-break: break-word; }
+  pre {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+    padding: 14px 16px; overflow-x: auto; font-size: 13.5px; line-height: 1.5;
+  }
+  pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+  pre .c { color: var(--ink-2); }
+
+  .figure {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+    padding: 16px; margin: 0 0 12px; overflow-x: auto;
+  }
+  .figure svg { display: block; width: 100%; min-width: 620px; height: auto; font-family: var(--font-ui); }
+  .caption { font-family: var(--font-ui); font-size: 12.5px; color: var(--ink-2); margin: 0 0 18px; }
+
+  /* diagram colours come from the theme tokens, so it works in light and dark */
+  .d-box { fill: var(--surface-2); stroke: var(--rule); stroke-width: 1.5; }
+  .d-server { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+  .d-cache { fill: var(--ok-soft); stroke: var(--ok); stroke-width: 1.5; }
+  .d-ext { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 1.5; }
+  .d-zone { fill: none; stroke: var(--rule); stroke-width: 1.2; stroke-dasharray: 5 4; }
+  .d-title { fill: var(--ink); font-size: 14px; font-weight: 700; }
+  .d-text { fill: var(--ink-2); font-size: 12px; }
+  .d-mono { fill: var(--ink-2); font-size: 11.5px; font-family: var(--font-mono); }
+  .d-zone-label { fill: var(--ink-2); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+  .d-line { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+  .d-line.secret { stroke: var(--flag); }
+  .d-arrow { fill: var(--ink-2); }
+  .d-label { fill: var(--ink); font-size: 11.5px; }
+  .d-label.secret { fill: var(--flag); }
+
+  .steps { counter-reset: s; list-style: none; padding: 0; }
+  .steps li {
+    counter-increment: s; position: relative; padding: 10px 14px 10px 50px; margin: 0 0 8px;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+  }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 14px; top: 10px;
+    width: 24px; height: 24px; border-radius: 99px; background: var(--accent); color: var(--paper);
+    font-family: var(--font-ui); font-size: 12px; font-weight: 700; display: grid; place-items: center;
+  }
+
+  .claim { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 16px 18px; margin: 0 0 14px; }
+  .claim.r-green { border-left: 3px solid var(--ok); }
+  .claim.r-amber { border-left: 3px solid var(--warn); }
+  .claim.r-red   { border-left: 3px solid var(--flag); }
+  .claim h3 { font-size: 18px; margin: 0 0 8px; }
+  .verdict {
+    font-family: var(--font-ui); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700;
+    display: inline-block; margin-bottom: 8px; padding: 2px 7px; border-radius: 99px;
+  }
+  .r-green .verdict { background: var(--ok-soft); color: var(--ok); }
+  .r-amber .verdict { background: var(--warn-soft); color: var(--warn); }
+  .r-red   .verdict { background: var(--flag-soft); color: var(--flag); }
+  .claim p { margin: 0 0 8px; max-width: var(--measure); }
+  .claim p:last-child { margin-bottom: 0; }
+  .claim .say { background: var(--surface-2); border-radius: var(--radius); padding: 10px 12px; }
+  .claim .say b { color: var(--accent); }
+
+  table { border-collapse: collapse; width: 100%; background: var(--surface); border: 1px solid var(--rule); font-size: 15px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+  th { font-family: var(--font-ui); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); background: var(--surface-2); }
+  .tablewrap { overflow-x: auto; margin: 0 0 18px; }
+
+  @media (max-width: 520px) {
+    body { font-size: 16px; }
+    h1 { font-size: 24px; }
+    .claim, .note { padding: 13px 14px; }
+    .shell { padding: 0 12px 60px; }
+    .masthead { padding: 20px 12px 16px; }
+  }
+  @media print {
+    :root { --paper: #fff; --surface: #fff; --surface-2: #fff; }
+    .rail { display: none !important; }
+    .claim, .note, .steps li { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-in">
+    <p class="kicker">Project overview &middot; Next.js 16 &middot; TypeScript</p>
+    <h1>Dev Wrapped</h1>
+    <p class="lede">&ldquo;Spotify Wrapped&rdquo; for any GitHub user: type a username and get a short, animated story of their last 12 months on GitHub, ending in a summary card that can be downloaded or shared, and that shows up as the link preview on LinkedIn and WhatsApp.</p>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="rail" aria-label="Sections">
+    <h2>Sections</h2>
+    <ol>
+      <li><a href="#what">What it does</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#flow">One request, step by step</a></li>
+      <li><a href="#folders">Folder structure</a></li>
+      <li><a href="#decisions">Design decisions</a></li>
+      <li><a href="#limits">Known limitations</a></li>
+      <li><a href="#scale">At scale</a></li>
+    </ol>
+  </aside>
+
+  <main>
+
+    <div class="note">
+      <h2>In one minute</h2>
+      <p>The browser never talks to GitHub. A <b>Server Component</b> fetches the data with a secret token, caches it for an hour, turns it into plain numbers with <b>pure functions</b>, and sends only those numbers to the browser. The browser adds the one thing only it knows &mdash; <b>its timezone</b> &mdash; to work out the busiest hour and the personality, and plays the slides. A <b>Route Handler</b> draws the same summary as a 1200&times;630 PNG for sharing.</p>
+    </div>
+
+    <section id="what">
+      <h2 class="sec-title"><span class="sn">01</span> &nbsp;What it does</h2>
+      <p class="sec-sub">Eight full-screen slides with Instagram-style progress bars. Tap (left third goes back), arrow keys, Space, or on-screen buttons.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>#</th><th>Slide</th><th>Where the number comes from</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Intro</td><td>GraphQL <code>user { name avatarUrl }</code></td></tr>
+          <tr><td>2</td><td>Total contributions</td><td><code>contributionCalendar.totalContributions</code></td></tr>
+          <tr><td>3</td><td>Top 3 languages</td><td><code>languageShares()</code>: bytes per language summed over public, non-fork repos</td></tr>
+          <tr><td>4</td><td>Busiest hour &amp; weekday</td><td>Hour: REST push events, in the viewer&rsquo;s timezone (<code>hourHistogram()</code>). Weekday: the daily calendar (<code>busiestWeekday()</code>)</td></tr>
+          <tr><td>5</td><td>Longest &amp; current streak</td><td><code>longestStreak()</code>, <code>currentStreak()</code> over the calendar</td></tr>
+          <tr><td>6</td><td>Most-contributed repo</td><td><code>topRepo()</code> over <code>commitContributionsByRepository</code></td></tr>
+          <tr><td>7</td><td>Coder personality</td><td><code>personality()</code>: first matching rule wins</td></tr>
+          <tr><td>8</td><td>Summary + Download / Share</td><td><code>/api/card/[username]</code> PNG</td></tr>
+        </tbody>
+      </table></div>
+      <p>Personality rules, in order: <b>Night Owl</b> (busiest hour 22:00&ndash;03:59), <b>Early Bird</b> (05:00&ndash;08:59), <b>Weekend Warrior</b> (more than 35% of contributions on Saturday/Sunday), <b>Streak Machine</b> (longest streak of 30+ days), <b>Polyglot</b> (5+ languages over 5% each), otherwise <b>Steady Builder</b>. A user with no public contributions gets a short &ldquo;quiet year&rdquo; story instead.</p>
+    </section>
+
+    <section id="architecture">
+      <h2 class="sec-title"><span class="sn">02</span> &nbsp;Architecture</h2>
+      <p class="sec-sub">Three places code runs: the browser, the Next.js server on Vercel, and GitHub. The red line is the only place the token exists.</p>
+
+      <div class="figure" role="img" aria-label="Architecture: the browser requests the page from the Next.js server on Vercel. The server's page and card route call lib/wrapped.ts, which calls lib/github.ts. lib/github.ts sends the token to the GitHub GraphQL and REST APIs, with responses cached for one hour in the Next.js data cache. The server returns HTML and computed stats to the browser, which computes the busiest hour in its own timezone. The CDN caches the share card PNG for one hour.">
+        <svg viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" class="d-arrow"/>
+            </marker>
+          </defs>
+
+          <!-- Browser -->
+          <text x="20" y="28" class="d-zone-label">Browser (phone)</text>
+          <rect x="20" y="40" width="200" height="200" rx="6" class="d-zone"/>
+          <rect x="36" y="58" width="168" height="72" rx="4" class="d-box"/>
+          <text x="48" y="80" class="d-title">Story.tsx</text>
+          <text x="48" y="98" class="d-text">slides, keys, taps,</text>
+          <text x="48" y="114" class="d-text">Framer Motion</text>
+          <rect x="36" y="146" width="168" height="78" rx="4" class="d-box"/>
+          <text x="48" y="168" class="d-title">useTimeZone()</text>
+          <text x="48" y="186" class="d-text">busiest hour and</text>
+          <text x="48" y="202" class="d-text">personality in the</text>
+          <text x="48" y="218" class="d-text">viewer&rsquo;s timezone</text>
+
+          <!-- Vercel -->
+          <text x="270" y="28" class="d-zone-label">Vercel</text>
+          <rect x="270" y="40" width="380" height="370" rx="6" class="d-zone"/>
+          <rect x="286" y="58" width="348" height="46" rx="4" class="d-cache"/>
+          <text x="298" y="78" class="d-title">CDN edge cache</text>
+          <text x="298" y="95" class="d-text">card PNG: s-maxage=3600, stale-while-revalidate</text>
+
+          <rect x="286" y="122" width="166" height="74" rx="4" class="d-server"/>
+          <text x="298" y="144" class="d-title">[username]/page.tsx</text>
+          <text x="298" y="162" class="d-text">Server Component,</text>
+          <text x="298" y="178" class="d-text">generateMetadata</text>
+
+          <rect x="468" y="122" width="166" height="74" rx="4" class="d-server"/>
+          <text x="480" y="144" class="d-title">api/card/route.tsx</text>
+          <text x="480" y="162" class="d-text">next/og ImageResponse</text>
+          <text x="480" y="178" class="d-text">1200 &times; 630 PNG</text>
+
+          <rect x="286" y="214" width="348" height="50" rx="4" class="d-server"/>
+          <text x="298" y="236" class="d-title">lib/wrapped.ts &rarr; lib/stats.ts</text>
+          <text x="298" y="253" class="d-text">React cache() per request &middot; pure stat functions</text>
+
+          <rect x="286" y="282" width="348" height="50" rx="4" class="d-server"/>
+          <text x="298" y="304" class="d-title">lib/github.ts &nbsp;<tspan class="d-mono">import "server-only"</tspan></text>
+          <text x="298" y="321" class="d-text">typed errors: not found, rate limit, request failed</text>
+
+          <rect x="286" y="348" width="348" height="46" rx="4" class="d-cache"/>
+          <text x="298" y="368" class="d-title">Next.js data cache</text>
+          <text x="298" y="385" class="d-text">fetch(&hellip;, { next: { revalidate: 3600 } })</text>
+
+          <!-- GitHub -->
+          <text x="700" y="28" class="d-zone-label">GitHub</text>
+          <rect x="700" y="40" width="180" height="370" rx="6" class="d-zone"/>
+          <rect x="716" y="236" width="148" height="66" rx="4" class="d-ext"/>
+          <text x="728" y="258" class="d-title">GraphQL API</text>
+          <text x="728" y="276" class="d-text">calendar, repos,</text>
+          <text x="728" y="292" class="d-text">languages</text>
+          <rect x="716" y="322" width="148" height="66" rx="4" class="d-ext"/>
+          <text x="728" y="344" class="d-title">REST API</text>
+          <text x="728" y="362" class="d-text">public push events</text>
+          <text x="728" y="378" class="d-text">(~30 days, max 300)</text>
+
+          <!-- arrows -->
+          <path d="M220 100 L286 150" class="d-line" marker-end="url(#arrow)"/>
+          <text x="226" y="90" class="d-label">GET /torvalds</text>
+          <path d="M286 175 L220 200" class="d-line" marker-end="url(#arrow)"/>
+          <text x="224" y="212" class="d-label">HTML + stats</text>
+          <path d="M369 196 L369 214" class="d-line" marker-end="url(#arrow)"/>
+          <path d="M551 196 L551 214" class="d-line" marker-end="url(#arrow)"/>
+          <path d="M551 104 L551 122" class="d-line" marker-end="url(#arrow)"/>
+          <path d="M460 264 L460 282" class="d-line" marker-end="url(#arrow)"/>
+          <path d="M460 332 L460 348" class="d-line" marker-end="url(#arrow)"/>
+          <path d="M634 371 L680 371 L680 269 L716 269" class="d-line secret" marker-end="url(#arrow)"/>
+          <path d="M680 355 L716 355" class="d-line secret" marker-end="url(#arrow)"/>
+          <text x="641" y="232" class="d-label secret">Bearer token</text>
+          <text x="641" y="246" class="d-label secret">(server only)</text>
+        </svg>
+      </div>
+      <p class="caption">Only the data cache talks to GitHub, and only on a cache miss. The browser receives computed numbers and never sees the token.</p>
+    </section>
+
+    <section id="flow">
+      <h2 class="sec-title"><span class="sn">03</span> &nbsp;One request, step by step</h2>
+      <p class="sec-sub">What happens when someone opens <code>/torvalds</code> for the first time this hour.</p>
+      <ol class="steps">
+        <li>The browser requests <code>/torvalds</code>. Next.js immediately streams <code>app/[username]/loading.tsx</code> (a skeleton shaped like the story) so the screen is never blank.</li>
+        <li><code>app/[username]/page.tsx</code> runs on the server and calls <code>getWrappedStats("torvalds")</code> in <code>lib/wrapped.ts</code>. It is wrapped in React&rsquo;s <code>cache()</code>, so <code>generateMetadata</code> and the page share one call.</li>
+        <li><code>lib/github.ts</code> checks the username format, then sends two requests <b>in parallel</b> (<code>Promise.all</code>): one GraphQL query for the calendar, repos and languages, and the REST events API (up to 3 pages of 100) for push timestamps.</li>
+        <li>Each <code>fetch</code> goes through the Next.js data cache with <code>revalidate: 3600</code>. On a miss it calls GitHub with the token; on a hit (the next hour) GitHub is not called at all. Measured locally: 1.7&nbsp;s on a miss, about 50&nbsp;ms on a hit.</li>
+        <li>Failed responses become typed errors: <code>UserNotFoundError</code> &rarr; <code>notFound()</code> &rarr; <code>not-found.tsx</code>; <code>RateLimitError</code> &rarr; a &ldquo;GitHub needs a short break&rdquo; screen rendered by the page; anything else &rarr; <code>error.tsx</code> with a <b>Try again</b> button.</li>
+        <li><code>computeStats()</code> in <code>lib/stats.ts</code> turns the raw data into a plain <code>WrappedStats</code> object. Push times stay raw, because the hour depends on the viewer.</li>
+        <li>The page renders <code>&lt;Story stats={&hellip;} /&gt;</code>. That is the boundary: <code>Story.tsx</code> is a Client Component, so the stats are serialized into the page and React hydrates it in the browser.</li>
+        <li>In the browser, <code>useTimeZone()</code> reads <code>Intl.DateTimeFormat().resolvedOptions().timeZone</code> (e.g. <code>Asia/Kolkata</code>). <code>hourHistogram()</code> and <code>personalityFor()</code> run there. The user moves through the slides.</li>
+        <li>On the last slide, <b>Download</b> is a plain link to <code>/api/card/torvalds?tz=Asia%2FKolkata</code>. The route reuses the cached data, draws the card with <code>next/og</code>, and the CDN keeps the PNG for an hour. Link-preview bots get the same URL without <code>tz</code> through the page&rsquo;s <code>og:image</code> tag.</li>
+      </ol>
+    </section>
+
+    <section id="folders">
+      <h2 class="sec-title"><span class="sn">04</span> &nbsp;Folder structure</h2>
+<pre><code>app/
+  layout.tsx                 <span class="c"># root layout, metadataBase, viewport</span>
+  page.tsx                   <span class="c"># home: username form + examples</span>
+  robots.ts                  <span class="c"># /robots.txt (otherwise it would match [username])</span>
+  [username]/
+    page.tsx                 <span class="c"># Server Component + generateMetadata (Open Graph)</span>
+    loading.tsx              <span class="c"># skeleton while GitHub is fetched</span>
+    not-found.tsx            <span class="c"># unknown user / organization</span>
+    error.tsx                <span class="c"># Client error boundary with retry()</span>
+  api/card/[username]/
+    route.tsx                <span class="c"># Route Handler: PNG share card</span>
+components/
+  Story.tsx                  <span class="c"># Client Component: slide state, navigation, animation</span>
+  ProgressBars.tsx  ShareButtons.tsx  ShareCard.tsx  StatusScreen.tsx  UsernameForm.tsx
+  slides/                    <span class="c"># one small component per slide + SlideLayout</span>
+hooks/
+  useTimeZone.ts             <span class="c"># useSyncExternalStore: null on server, real TZ in browser</span>
+lib/
+  github.ts                  <span class="c"># server-only fetch, caching, typed errors</span>
+  wrapped.ts                 <span class="c"># cache(fetch + compute) shared by page and metadata</span>
+  stats.ts                   <span class="c"># pure stat functions</span>
+  format.ts  personalities.ts  types.ts  username.ts
+  *.test.ts                  <span class="c"># Vitest</span>
+e2e/
+  happy-path.spec.ts         <span class="c"># Playwright, Pixel 7, Asia/Kolkata</span>
+  mock-github.mjs            <span class="c"># fake GitHub API for the tests</span>
+.github/workflows/ci.yml     <span class="c"># lint, format, types, unit, build, e2e</span></code></pre>
+    </section>
+
+    <section id="decisions">
+      <h2 class="sec-title"><span class="sn">05</span> &nbsp;Design decisions and trade-offs</h2>
+      <p class="sec-sub">Green: clear win. Amber: a deliberate trade-off with a cost worth knowing.</p>
+
+      <div class="claim r-green">
+        <span class="verdict">Security</span>
+        <h3>The token lives only on the server</h3>
+        <p>All GitHub calls are in <code>lib/github.ts</code>, which starts with <code>import "server-only"</code>: if any Client Component ever imports it, the <b>build fails</b>. The variable is <code>GITHUB_TOKEN</code>, not <code>NEXT_PUBLIC_&hellip;</code>, so Next.js never inlines it into browser JavaScript. It is a fine-grained token with read-only access to public data, stored in <code>.env.local</code> (git-ignored) and in Vercel&rsquo;s environment variables.</p>
+        <p class="say"><b>Trade-off:</b> every request goes through our server, so our server is the bottleneck and our token&rsquo;s rate limit is shared by all users. Caching (next card) is what makes this OK.</p>
+      </div>
+
+      <div class="claim r-green">
+        <span class="verdict">Performance</span>
+        <h3>Cache GitHub for an hour, at two levels</h3>
+        <p>With a token, GitHub allows 5,000 REST requests per hour, and a separate points budget for GraphQL. One new user costs 1 GraphQL query plus 1&ndash;3 REST pages. <code>fetch(&hellip;, { next: { revalidate: 3600 } })</code> stores responses in the Next.js data cache, so a popular profile costs GitHub nothing after the first view each hour. Usernames are lowercased so <code>/Torvalds</code> and <code>/torvalds</code> share one entry. The PNG adds <code>Cache-Control: s-maxage=3600, stale-while-revalidate=86400</code> so the CDN serves it without running our code.</p>
+        <p class="say"><b>Trade-off:</b> stats can be up to an hour old. For a yearly summary that is invisible. The home page&rsquo;s example links have <code>prefetch={false}</code>, because prefetching them made three GitHub lookups on every home page visit.</p>
+      </div>
+
+      <div class="claim r-green">
+        <span class="verdict">Testability</span>
+        <h3>All maths in pure functions</h3>
+        <p><code>lib/stats.ts</code> has no fetching, no clock and no randomness. Raw data goes in, numbers come out, so each rule can be tested with a few lines of input: streaks across month and year boundaries, &ldquo;today has no contributions yet&rdquo;, ties (the earlier hour, weekday or repo wins so results never change), timezones including daylight saving time, and every personality rule plus their order. The same functions run on the server (stats), in the browser (hour, personality) and in the card route.</p>
+      </div>
+
+      <div class="claim r-amber">
+        <span class="verdict">Trade-off</span>
+        <h3>The busiest hour uses the viewer&rsquo;s timezone</h3>
+        <p>The contribution calendar is daily only, so hours come from push event timestamps, which are UTC. GitHub does not expose the coder&rsquo;s timezone, so the hour is converted in the <b>browser</b> with <code>Intl.DateTimeFormat</code> and labelled &ldquo;in your timezone&rdquo;. Because the personality depends on the hour, it depends on the viewer too: the same push at 20:00 UTC is 01:30 in India (Night Owl) but 20:00 in London.</p>
+        <p><code>useTimeZone()</code> uses <code>useSyncExternalStore</code> with a server snapshot of <code>null</code>, so the server HTML and the first browser render match (no hydration error) and the real value appears right after.</p>
+        <p class="say"><b>Cost:</b> the link preview (no viewer, so UTC) can show a different personality from the downloaded card (viewer&rsquo;s timezone, sent as <code>?tz=</code>). <code>validTimeZone()</code> falls back to UTC for invalid values.</p>
+      </div>
+
+      <div class="claim r-green">
+        <span class="verdict">Sharing</span>
+        <h3>The share card is generated, not screenshotted</h3>
+        <p><code>app/api/card/[username]/route.tsx</code> returns <code>new ImageResponse(&lt;ShareCard /&gt;)</code>. <code>next/og</code> uses Satori to turn JSX with inline flexbox styles into SVG, then into a PNG. The same URL is the page&rsquo;s <code>og:image</code> and <code>twitter:image</code>, so a shared link previews as the card. Download is a same-origin <code>&lt;a download&gt;</code>, so it needs no JavaScript. Share uses the phone&rsquo;s share sheet (<code>navigator.share</code>) and falls back to copying the link.</p>
+        <p class="say"><b>Gotchas learned:</b> Satori supports only a subset of CSS (no grid, no Tailwind classes), and every <code>&lt;div&gt;</code> with more than one child needs <code>display: flex</code>. That includes JSX text like <code>@{login} &middot; &hellip;</code>, which is several text nodes, so those are written as a single template string.</p>
+      </div>
+
+      <div class="claim r-amber">
+        <span class="verdict">Trade-off</span>
+        <h3>Loading skeleton vs. a real 404 status</h3>
+        <p><code>loading.tsx</code> makes Next.js stream the skeleton straight away, so the HTTP status (200) is sent <b>before</b> we know whether the user exists. When the page later calls <code>notFound()</code>, the not-found UI replaces the skeleton and Next adds <code>&lt;meta name="robots" content="noindex"&gt;</code>, but the status stays 200.</p>
+        <p class="say"><b>Why I kept it:</b> the alternative, a true 404 status, means no skeleton, so someone opening a shared link would stare at a blank screen for 1&ndash;2 seconds. <code>noindex</code> keeps search engines correct anyway.</p>
+      </div>
+
+      <div class="claim r-green">
+        <span class="verdict">Errors</span>
+        <h3>Rate limits are handled in the page, not in error.tsx</h3>
+        <p>In production, Next.js replaces server error messages with a generic one before they reach <code>error.tsx</code>, to avoid leaking secrets. So <code>error.tsx</code> cannot tell &ldquo;rate limited&rdquo; from &ldquo;GitHub is down&rdquo;. The page catches <code>RateLimitError</code> itself and renders its own screen. Rate limits are detected two ways: REST uses HTTP 403/429 with <code>x-ratelimit-remaining: 0</code>, while GraphQL usually answers <b>200</b> with <code>errors[].type === "RATE_LIMITED"</code>.</p>
+      </div>
+
+      <div class="claim r-green">
+        <span class="verdict">Testing</span>
+        <h3>A fake GitHub for end-to-end tests</h3>
+        <p>GitHub is called from the <b>server</b>, so browser-level mocking cannot see those calls. <code>lib/github.ts</code> reads <code>GITHUB_API_URL</code> (default <code>https://api.github.com</code>), and Playwright starts <code>e2e/mock-github.mjs</code>, a small Node HTTP server with four users: normal, no activity, rate-limited, and not found. The tests run the real production build on a Pixel 7 profile in the <code>Asia/Kolkata</code> timezone, so the timezone logic is tested end to end. CI needs no token and no network access to GitHub.</p>
+      </div>
+
+      <div class="claim r-green">
+        <span class="verdict">Accessibility</span>
+        <h3>Keyboard, screen reader and motion</h3>
+        <p>Arrow keys and Space move slides; Space is ignored when a button or link has focus so it does not fire twice. A visible <code>:focus-visible</code> ring, labelled previous/next buttons, an <code>aria-live</code> region announcing &ldquo;Slide 3 of 8: Top languages&rdquo;, and <code>aria-roledescription</code> carousel/slide. <code>useReducedMotion()</code> sets animation duration to 0, and Tailwind&rsquo;s <code>motion-safe:</code> guards the progress bars and skeleton pulse. No auto-advance, so nobody is rushed. On phones, <code>h-dvh</code> and safe-area padding keep controls clear of the address bar and the notch.</p>
+      </div>
+    </section>
+
+    <section id="limits">
+      <h2 class="sec-title"><span class="sn">06</span> &nbsp;Known limitations</h2>
+      <ul>
+        <li><b>Busiest hour covers about 30 days.</b> The public events API returns at most 300 events and, as measured, only about the last 30 days, not the full year. The slide says so.</li>
+        <li><b>Viewer&rsquo;s timezone, not the coder&rsquo;s.</b> See the trade-off above.</li>
+        <li><b>Public data only.</b> Private contributions appear in the total only if the user chose to show them on their profile; private repos are not in languages or the top repo.</li>
+        <li><b>Organizations are not supported.</b> GraphQL <code>user(login:)</code> returns NOT_FOUND for them, which shows the not-found page.</li>
+        <li><b>First 100 repos, top 10 languages each.</b> Users with more than 100 non-fork repos are measured on the first 100 (no pagination yet).</li>
+        <li><b>One shared token.</b> Every visitor uses the same GitHub rate limit; caching makes this fine for a portfolio, not for a viral launch (next section).</li>
+        <li><b>Not-found returns HTTP 200</b> with <code>noindex</code>, because of streaming (see above).</li>
+      </ul>
+    </section>
+
+    <section id="scale">
+      <h2 class="sec-title"><span class="sn">07</span> &nbsp;What I would do next at scale</h2>
+      <p class="sec-sub">&ldquo;What if a million people open it on 31 December?&rdquo;</p>
+      <ul>
+        <li><b>The real bottleneck is GitHub, not our servers.</b> One token allows about 5,000 REST requests an hour. Vercel can scale the Next.js functions, but a million new users would need about a million GraphQL calls. So the answer is about GitHub quota, not CPU.</li>
+        <li><b>Use each user&rsquo;s own quota.</b> Add &ldquo;Sign in with GitHub&rdquo; (OAuth or a GitHub App). Requests for your own Wrapped then use your token&rsquo;s limit, and a GitHub App&rsquo;s limit also grows with installations.</li>
+        <li><b>Shared cache.</b> Move from the per-deployment data cache to a shared store (Redis / Vercel KV) keyed by lowercase username with a 1&ndash;24 hour TTL, and cache the <b>computed stats</b> (a few KB) rather than raw responses.</li>
+        <li><b>Request coalescing.</b> If 10,000 people open <code>/torvalds</code> in the same second on a cold cache, make only one GitHub call and let the rest wait for it (a lock or &ldquo;single flight&rdquo; per username).</li>
+        <li><b>Pre-compute for the peak.</b> Before 31 December, warm the cache for the most-viewed profiles in a background job. Serve slightly stale data (<code>stale-while-revalidate</code>) instead of failing.</li>
+        <li><b>A queue when the budget runs out.</b> When GitHub quota is exhausted, put new users in a queue and show &ldquo;we&rsquo;ll be ready in a few minutes&rdquo;, instead of an error.</li>
+        <li><b>Protect the budget.</b> Rate-limit by IP at the edge, so one script cannot burn the quota by requesting random usernames. Cache &ldquo;not found&rdquo; answers briefly too.</li>
+        <li><b>Share images.</b> Already CDN-cached. At scale, store generated PNGs in object storage (e.g. Vercel Blob or S3) keyed by username, date and timezone.</li>
+        <li><b>Observability.</b> Track cache hit rate, GitHub remaining quota (from response headers), p95 latency and error rate, and alert before the quota runs out.</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>
