@@ -18,6 +18,7 @@ import { HoursSlide } from "./slides/HoursSlide";
 import { IntroSlide } from "./slides/IntroSlide";
 import { LanguagesSlide } from "./slides/LanguagesSlide";
 import { PersonalitySlide } from "./slides/PersonalitySlide";
+import { QuietYearSlide } from "./slides/QuietYearSlide";
 import { StreakSlide } from "./slides/StreakSlide";
 import { SummarySlide } from "./slides/SummarySlide";
 import { TopRepoSlide } from "./slides/TopRepoSlide";
@@ -167,13 +168,25 @@ function NavButton({
 }
 
 function buildSlides(stats: WrappedStats, timeZone: string | null): Slide[] {
+  const intro: Slide = {
+    label: "Intro",
+    background: "from-violet-600 to-indigo-950",
+    content: <IntroSlide {...stats} />,
+  };
+  if (stats.totalContributions === 0) {
+    return [
+      intro,
+      {
+        label: "No public activity",
+        background: "from-emerald-600 to-teal-950",
+        content: <QuietYearSlide />,
+      },
+    ];
+  }
+
   const personality = timeZone ? personalityFor(stats, timeZone) : null;
   return [
-    {
-      label: "Intro",
-      background: "from-violet-600 to-indigo-950",
-      content: <IntroSlide {...stats} />,
-    },
+    intro,
     {
       label: "Total contributions",
       background: "from-emerald-600 to-teal-950",

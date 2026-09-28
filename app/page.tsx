@@ -18,8 +18,11 @@ export default function Home() {
         {EXAMPLES.map((name, i) => (
           <span key={name}>
             {i > 0 && ", "}
+            {/* No prefetch: it would look up these users on GitHub on every
+                home page visit, using up our rate limit. */}
             <Link
               href={`/${name}`}
+              prefetch={false}
               className="font-medium underline underline-offset-4"
             >
               {name}

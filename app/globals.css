@@ -23,3 +23,9 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
+
+/* A clear focus ring for keyboard users, visible on light and dark backgrounds. */
+:focus-visible {
+  outline: 3px solid #a78bfa;
+  outline-offset: 3px;
+}

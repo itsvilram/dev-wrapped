@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 
@@ -17,6 +17,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "Dev Wrapped",
   description: "Your last 12 months on GitHub, as an animated story.",
+};
+
+// viewport-fit=cover lets the story use the full screen on notched phones;
+// the story adds safe-area padding itself.
+export const viewport: Viewport = {
+  viewportFit: "cover",
+  themeColor: "#1e1b4b",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
