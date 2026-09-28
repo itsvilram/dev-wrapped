@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CARD_SIZE } from "@/components/ShareCard";
@@ -8,6 +9,7 @@ import { formatNumber } from "@/lib/format";
 import { RateLimitError, UserNotFoundError } from "@/lib/github";
 import { cardPath } from "@/lib/links";
 import { parseYear, periodLabel } from "@/lib/period";
+import { TooManyRequestsError, clientIdFrom } from "@/lib/rate-limit";
 import type { WrappedStats } from "@/lib/types";
 import { getWrappedStats } from "@/lib/wrapped";
 
@@ -27,7 +29,10 @@ export async function generateMetadata({
 }: Props): Promise<Metadata> {
   const { username } = await params;
   const year = await readYear(searchParams);
-  const stats = await getWrappedStats(username, year).catch(() => null);
+  const clientId = clientIdFrom(await headers());
+  const stats = await getWrappedStats(username, year, clientId).catch(
+    () => null,
+  );
   if (!stats) return { title: "Dev Wrapped" };
 
   const title = `${stats.name ?? stats.login}'s GitHub Wrapped${year ? ` ${year}` : ""}`;
@@ -55,19 +60,40 @@ export async function generateMetadata({
 export default async function WrappedPage({ params, searchParams }: Props) {
   const { username } = await params;
   const year = await readYear(searchParams);
+  const clientId = clientIdFrom(await headers());
   let stats: WrappedStats;
   try {
-    stats = await getWrappedStats(username, year);
+    stats = await getWrappedStats(username, year, clientId);
   } catch (error) {
     if (error instanceof UserNotFoundError) notFound();
     // Handled here, not in error.tsx, because in production Next.js hides
     // server error details from error.tsx, so it could not tell them apart.
     if (error instanceof RateLimitError) return <RateLimited />;
+    if (error instanceof TooManyRequestsError) {
+      return (
+        <TooManyLookups minutes={Math.ceil(error.retryAfterSeconds / 60)} />
+      );
+    }
     throw error; // anything else: error.tsx
   }
 
   // A new key when the year changes restarts the story from the first slide.
   return <Story key={year ?? "last-12-months"} stats={stats} />;
+}
+
+// Our own limit: this visitor looked up many new users in a short time.
+function TooManyLookups({ minutes }: { minutes: number }) {
+  return (
+    <StatusScreen
+      emoji="🐢"
+      title="Slow down a little"
+      message={`You have looked up a lot of new profiles in a short time. Please try again in about ${minutes} ${minutes === 1 ? "minute" : "minutes"}. Profiles you have already seen still work.`}
+    >
+      <Link href="/" className={secondaryButtonClass}>
+        Home
+      </Link>
+    </StatusScreen>
+  );
 }
 
 function RateLimited() {

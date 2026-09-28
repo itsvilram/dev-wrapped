@@ -396,6 +396,15 @@ e2e/
       </div>
 
       <div class="claim r-green">
+        <span class="verdict">Backend</span>
+        <h3>A shared Redis cache with coalescing, stale fallback and rate limiting</h3>
+        <p><code>lib/stats-cache.ts</code> wraps &ldquo;fetch from GitHub and compute&rdquo;. Computed stats are stored in Upstash Redis under <code>wrapped:v2:{login}:{year}</code> (the <code>v2</code> is bumped when the stats shape changes). A request first reads that key: under an hour old, it is returned with no GitHub call. Otherwise the request tries <code>SET lock NX PX 15000</code>; exactly one request wins and calls GitHub, the rest either return the stale copy or poll until the fresh one appears. That is <b>request coalescing</b>: 10 simultaneous requests for a new user were measured to make 1 GitHub lookup. The lock is released with a small Lua script (compare-and-delete), so a request never deletes a lock it no longer owns.</p>
+        <p>Only the lock winner spends GitHub quota, and only after a per-IP <b>fixed-window rate limit</b> (<code>INCR</code> + <code>EXPIRE NX</code> in one <code>MULTI</code>): 30 new lookups per 10 minutes, cache hits free. If GitHub is rate-limited or down, or the visitor is over their limit, the 24-hour <b>stale copy</b> is served instead of an error. Unknown users are cached for 10 minutes (<b>negative caching</b>).</p>
+        <p>Upstash talks to Redis over HTTPS, which suits serverless functions that cannot keep a TCP connection pool. <code>lib/store.ts</code> hides Redis behind a five-method interface with an in-memory twin, so unit tests, local development and CI run the exact same logic with no Redis.</p>
+        <p class="say"><b>Trade-off:</b> fixed windows allow a short burst at a window edge (up to 2&times; the limit across the boundary); a sliding window would be smoother but needs more Redis operations per request. Polling waiters add up to 250&nbsp;ms of latency; pub/sub would be faster but is more moving parts on a serverless platform.</p>
+      </div>
+
+      <div class="claim r-green">
         <span class="verdict">Performance</span>
         <h3>Cache GitHub for an hour, at two levels</h3>
         <p>With a token, GitHub allows 5,000 REST requests per hour, and a separate points budget for GraphQL. One new user costs 1 GraphQL query plus 1&ndash;3 REST pages. <code>fetch(&hellip;, { next: { revalidate: 3600 } })</code> stores responses in the Next.js data cache, so a popular profile costs GitHub nothing after the first view each hour. Usernames are lowercased so <code>/Torvalds</code> and <code>/torvalds</code> share one entry. The PNG adds <code>Cache-Control: s-maxage=3600, stale-while-revalidate=86400</code> so the CDN serves it without running our code.</p>
@@ -469,11 +478,10 @@ e2e/
       <ul>
         <li><b>The real bottleneck is GitHub, not our servers.</b> One token allows about 5,000 REST requests an hour. Vercel can scale the Next.js functions, but a million new users would need about a million GraphQL calls. So the answer is about GitHub quota, not CPU.</li>
         <li><b>Use each user&rsquo;s own quota.</b> Add &ldquo;Sign in with GitHub&rdquo; (OAuth or a GitHub App). Requests for your own Wrapped then use your token&rsquo;s limit, and a GitHub App&rsquo;s limit also grows with installations.</li>
-        <li><b>Shared cache.</b> Move from the per-deployment data cache to a shared store (Redis / Vercel KV) keyed by lowercase username with a 1&ndash;24 hour TTL, and cache the <b>computed stats</b> (a few KB) rather than raw responses.</li>
-        <li><b>Request coalescing.</b> If 10,000 people open <code>/torvalds</code> in the same second on a cold cache, make only one GitHub call and let the rest wait for it (a lock or &ldquo;single flight&rdquo; per username).</li>
+        <li><b>Already built:</b> a shared Redis cache of computed stats, request coalescing, a stale fallback, negative caching and per-IP rate limiting (see the Redis card above). What is left:</li>
         <li><b>Pre-compute for the peak.</b> Before 31 December, warm the cache for the most-viewed profiles in a background job. Serve slightly stale data (<code>stale-while-revalidate</code>) instead of failing.</li>
         <li><b>A queue when the budget runs out.</b> When GitHub quota is exhausted, put new users in a queue and show &ldquo;we&rsquo;ll be ready in a few minutes&rdquo;, instead of an error.</li>
-        <li><b>Protect the budget.</b> Rate-limit by IP at the edge, so one script cannot burn the quota by requesting random usernames. Cache &ldquo;not found&rdquo; answers briefly too.</li>
+        <li><b>Rate-limit earlier.</b> Move the per-IP limit to the edge (Next.js <code>proxy.ts</code>) so abusive traffic never reaches a function.</li>
         <li><b>Share images.</b> Already CDN-cached. At scale, store generated PNGs in object storage (e.g. Vercel Blob or S3) keyed by username, date and timezone.</li>
         <li><b>Observability.</b> Track cache hit rate, GitHub remaining quota (from response headers), p95 latency and error rate, and alert before the quota runs out.</li>
       </ul>

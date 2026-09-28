@@ -30,6 +30,10 @@ export default defineConfig({
       env: {
         GITHUB_API_URL: `http://localhost:${MOCK_PORT}`,
         GITHUB_TOKEN: "test-token",
+        // Empty values override .env.local, so tests always use the
+        // in-memory store and never write fake data into the real Redis.
+        UPSTASH_REDIS_REST_URL: "",
+        UPSTASH_REDIS_REST_TOKEN: "",
       },
       reuseExistingServer: false,
     },

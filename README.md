@@ -47,7 +47,11 @@ Browser ──► Next.js server (Vercel) ──► GitHub GraphQL API  (calenda
 ```
 
 - **Server-only data.** `app/[username]/page.tsx` is a Server Component. It calls `lib/github.ts`, which starts with `import "server-only"`, so the GitHub token can never be bundled into browser code.
-- **Caching.** Every GitHub request uses `fetch(..., { next: { revalidate: 3600 } })`, so a user is fetched from GitHub at most once an hour. The share card PNG is also cached by the CDN for an hour.
+- **Shared cache in Redis** (`lib/stats-cache.ts`, Upstash). Computed stats are stored per user and year: fresh for 1 hour, with a stale copy kept for 24 hours that is served if GitHub is down or rate-limited. Unknown users are remembered for 10 minutes.
+- **Request coalescing.** A Redis lock (`SET NX PX`) per user means only one request calls GitHub; others wait for its result. Tested with 10 simultaneous requests: 1 GitHub lookup.
+- **Rate limiting.** A fixed-window counter per IP (`INCR` + `EXPIRE`) allows 30 new (uncached) lookups per 10 minutes; cache hits are free.
+- **More caching.** GitHub responses also go through Next.js's fetch cache (`revalidate: 3600`), and the share card PNG is cached by the CDN for an hour.
+- Without Redis configured, the same code runs on an in-memory store (`lib/store.ts`), which is what local tests and CI use.
 - **Pure stats.** All the numbers come from pure functions in `lib/stats.ts` (raw data in, numbers out), which makes them easy to unit-test.
 - **Timezones.** GitHub gives push times in UTC. The busiest hour and the personality are worked out in the browser, in the viewer's timezone, and labelled "in your timezone".
 - **States.** Loading skeleton, user not found, no public activity, GitHub rate limit, and network errors each have their own screen.
@@ -107,6 +111,6 @@ CI (`.github/workflows/ci.yml`) runs lint, formatting, type-check, unit tests, b
 
 1. Push this repo to GitHub.
 2. On [vercel.com](https://vercel.com), **Add New → Project** and import the repo. The defaults for Next.js are correct.
-3. Under **Environment Variables**, add `GITHUB_TOKEN` with your fine-grained token.
+3. Under **Environment Variables**, add `GITHUB_TOKEN` with your fine-grained token, and `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` from an [Upstash](https://upstash.com) Redis database (REST API section; pick the region closest to your Vercel functions, e.g. us-east-1).
 4. Deploy. Vercel sets `VERCEL_PROJECT_PRODUCTION_URL`, which `app/layout.tsx` uses to build full URLs for the link preview image.
 5. Check a link preview with a tool such as the LinkedIn Post Inspector, and run PageSpeed Insights on the home page.

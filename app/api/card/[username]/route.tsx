@@ -4,6 +4,7 @@ import { RateLimitError, UserNotFoundError } from "@/lib/github";
 import { personalityFor } from "@/lib/stats";
 import { validTimeZone } from "@/lib/format";
 import { parseYear } from "@/lib/period";
+import { TooManyRequestsError, clientIdFrom } from "@/lib/rate-limit";
 import { getWrappedStats } from "@/lib/wrapped";
 
 // Browsers and CDNs (Vercel) may keep the PNG for an hour, the same as our
@@ -25,7 +26,11 @@ export async function GET(
   const year = parseYear(query.get("year"), new Date().getUTCFullYear());
 
   try {
-    const stats = await getWrappedStats(username, year);
+    const stats = await getWrappedStats(
+      username,
+      year,
+      clientIdFrom(request.headers),
+    );
     return new ImageResponse(
       <ShareCard stats={stats} personality={personalityFor(stats, timeZone)} />,
       { ...CARD_SIZE, headers: { "Cache-Control": CACHE_CONTROL } },
@@ -33,6 +38,12 @@ export async function GET(
   } catch (error) {
     if (error instanceof UserNotFoundError) {
       return new Response("User not found", { status: 404 });
+    }
+    if (error instanceof TooManyRequestsError) {
+      return new Response("Too many new lookups, try again later", {
+        status: 429,
+        headers: { "Retry-After": String(error.retryAfterSeconds) },
+      });
     }
     if (error instanceof RateLimitError) {
       return new Response("GitHub rate limit reached, try again later", {
