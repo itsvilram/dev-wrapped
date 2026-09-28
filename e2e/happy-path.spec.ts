@@ -24,6 +24,12 @@ test("enter a username and go through the whole story", async ({ page }) => {
   await expectSlide(page, "Total contributions");
   await expect(page.getByText("120", { exact: true })).toBeVisible();
 
+  await page.keyboard.press("ArrowRight");
+  await expectSlide(page, "Beyond the total");
+  await expect(page.getByText("95", { exact: true })).toBeVisible();
+  await expect(page.getByText("pull requests")).toBeVisible();
+  await expect(page.getByText("1,234")).toBeVisible(); // stars: 1200 + 34
+
   await page.keyboard.press(" "); // Space also moves forward
   await expectSlide(page, "Top languages");
   await expect(page.getByText("1. TypeScript")).toBeVisible();

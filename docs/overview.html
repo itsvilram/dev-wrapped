@@ -234,18 +234,19 @@
 
     <section id="what">
       <h2 class="sec-title"><span class="sn">01</span> &nbsp;What it does</h2>
-      <p class="sec-sub">Eight full-screen slides with Instagram-style progress bars. Tap (left third goes back), arrow keys, Space, or on-screen buttons.</p>
+      <p class="sec-sub">Nine full-screen slides with Instagram-style progress bars. Tap (left third goes back), arrow keys, Space, or on-screen buttons.</p>
       <div class="tablewrap"><table>
         <thead><tr><th>#</th><th>Slide</th><th>Where the number comes from</th></tr></thead>
         <tbody>
           <tr><td>1</td><td>Intro</td><td>GraphQL <code>user { name avatarUrl }</code></td></tr>
           <tr><td>2</td><td>Total contributions</td><td><code>contributionCalendar.totalContributions</code></td></tr>
-          <tr><td>3</td><td>Top 3 languages</td><td><code>languageShares()</code>: bytes per language summed over public, non-fork repos</td></tr>
-          <tr><td>4</td><td>Busiest hour &amp; weekday</td><td>Hour: REST push events, in the viewer&rsquo;s timezone (<code>hourHistogram()</code>). Weekday: the daily calendar (<code>busiestWeekday()</code>)</td></tr>
-          <tr><td>5</td><td>Longest &amp; current streak</td><td><code>longestStreak()</code>, <code>currentStreak()</code> over the calendar</td></tr>
-          <tr><td>6</td><td>Most-contributed repo</td><td><code>topRepo()</code> over <code>commitContributionsByRepository</code></td></tr>
-          <tr><td>7</td><td>Coder personality</td><td><code>personality()</code>: first matching rule wins</td></tr>
-          <tr><td>8</td><td>Summary + Download / Share</td><td><code>/api/card/[username]</code> PNG</td></tr>
+          <tr><td>3</td><td>Beyond the total</td><td><code>contributionsCollection</code> totals by type (commits, PRs, reviews, issues) and <code>totalStars()</code></td></tr>
+          <tr><td>4</td><td>Top 3 languages</td><td><code>languageShares()</code>: bytes per language summed over public, non-fork repos</td></tr>
+          <tr><td>5</td><td>Busiest hour &amp; weekday</td><td>Hour: REST push events, in the viewer&rsquo;s timezone (<code>hourHistogram()</code>). Weekday: the daily calendar (<code>busiestWeekday()</code>)</td></tr>
+          <tr><td>6</td><td>Longest &amp; current streak</td><td><code>longestStreak()</code>, <code>currentStreak()</code> over the calendar</td></tr>
+          <tr><td>7</td><td>Most-contributed repo</td><td><code>topRepo()</code> over <code>commitContributionsByRepository</code></td></tr>
+          <tr><td>8</td><td>Coder personality</td><td><code>personality()</code>: first matching rule wins</td></tr>
+          <tr><td>9</td><td>Summary + Download / Share</td><td><code>/api/card/[username]</code> PNG</td></tr>
         </tbody>
       </table></div>
       <p>Personality rules, in order: <b>Night Owl</b> (busiest hour 22:00&ndash;03:59), <b>Early Bird</b> (05:00&ndash;08:59), <b>Weekend Warrior</b> (more than 35% of contributions on Saturday/Sunday), <b>Streak Machine</b> (longest streak of 30+ days), <b>Polyglot</b> (5+ languages over 5% each), otherwise <b>Steady Builder</b>. A user with no public contributions gets a short &ldquo;quiet year&rdquo; story instead.</p>
@@ -444,7 +445,7 @@ e2e/
       <div class="claim r-green">
         <span class="verdict">Accessibility</span>
         <h3>Keyboard, screen reader and motion</h3>
-        <p>Arrow keys and Space move slides; Space is ignored when a button or link has focus so it does not fire twice. A visible <code>:focus-visible</code> ring, labelled previous/next buttons, an <code>aria-live</code> region announcing &ldquo;Slide 3 of 8: Top languages&rdquo;, and <code>aria-roledescription</code> carousel/slide. <code>useReducedMotion()</code> sets animation duration to 0, and Tailwind&rsquo;s <code>motion-safe:</code> guards the progress bars and skeleton pulse. No auto-advance, so nobody is rushed. On phones, <code>h-dvh</code> and safe-area padding keep controls clear of the address bar and the notch.</p>
+        <p>Arrow keys and Space move slides; Space is ignored when a button or link has focus so it does not fire twice. A visible <code>:focus-visible</code> ring, labelled previous/next buttons, an <code>aria-live</code> region announcing &ldquo;Slide 4 of 9: Top languages&rdquo;, and <code>aria-roledescription</code> carousel/slide. <code>useReducedMotion()</code> sets animation duration to 0, and Tailwind&rsquo;s <code>motion-safe:</code> guards the progress bars and skeleton pulse. No auto-advance, so nobody is rushed. On phones, <code>h-dvh</code> and safe-area padding keep controls clear of the address bar and the notch.</p>
       </div>
     </section>
 
@@ -455,7 +456,7 @@ e2e/
         <li><b>Viewer&rsquo;s timezone, not the coder&rsquo;s.</b> See the trade-off above.</li>
         <li><b>Public data only.</b> Private contributions appear in the total only if the user chose to show them on their profile; private repos are not in languages or the top repo.</li>
         <li><b>Organizations are not supported.</b> GraphQL <code>user(login:)</code> returns NOT_FOUND for them, which shows the not-found page.</li>
-        <li><b>First 100 repos, top 10 languages each.</b> Users with more than 100 non-fork repos are measured on the first 100 (no pagination yet).</li>
+        <li><b>100 most-starred repos, top 10 languages each.</b> Languages and stars are measured on a user&rsquo;s 100 most-starred non-fork repos (no pagination yet).</li>
         <li><b>One shared token.</b> Every visitor uses the same GitHub rate limit; caching makes this fine for a portfolio, not for a viral launch (next section).</li>
         <li><b>Not-found returns HTTP 200</b> with <code>noindex</code>, because of streaming (see above).</li>
       </ul>

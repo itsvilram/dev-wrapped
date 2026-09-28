@@ -21,6 +21,10 @@ export type GitHubUser = {
   name: string | null;
   avatarUrl: string;
   contributionsCollection: {
+    totalCommitContributions: number;
+    totalPullRequestContributions: number;
+    totalPullRequestReviewContributions: number;
+    totalIssueContributions: number;
     contributionCalendar: {
       totalContributions: number;
       weeks: { contributionDays: ContributionDay[] }[];
@@ -28,7 +32,7 @@ export type GitHubUser = {
     commitContributionsByRepository: RepoContribution[];
   };
   repositories: {
-    nodes: { languages: { edges: LanguageEdge[] } }[];
+    nodes: { stargazerCount: number; languages: { edges: LanguageEdge[] } }[];
   };
 };
 
@@ -54,6 +58,14 @@ export type Personality =
   | "Polyglot"
   | "Steady Builder";
 
+// Contributions by type in the period (what the calendar total is made of).
+export type Activity = {
+  commits: number;
+  pullRequests: number;
+  reviews: number;
+  issues: number;
+};
+
 export type WrappedStats = {
   login: string;
   name: string | null;
@@ -65,6 +77,8 @@ export type WrappedStats = {
   longestStreak: number;
   currentStreak: number;
   topRepo: { name: string; commits: number } | null;
+  activity: Activity;
+  stars: number; // stars on the user's own public repos (all time)
   // Kept raw: the hour depends on the viewer's timezone, so it is
   // worked out later with hourHistogram().
   pushTimes: string[];

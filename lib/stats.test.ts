@@ -11,6 +11,7 @@ import {
   personality,
   personalityFor,
   topRepo,
+  totalStars,
   weekendShare,
   type PersonalityInput,
 } from "./stats";
@@ -32,6 +33,7 @@ function days(start: string, counts: number[]): ContributionDay[] {
 
 function repo(...langs: [name: string, size: number][]) {
   return {
+    stargazerCount: 0,
     languages: {
       edges: langs.map(([name, size]) => ({
         size,
@@ -113,6 +115,18 @@ describe("languageShares", () => {
   it("breaks ties by name so the order is stable", () => {
     const shares = languageShares([repo(["Rust", 50], ["C", 50])]);
     expect(shares.map((l) => l.name)).toEqual(["C", "Rust"]);
+  });
+});
+
+describe("totalStars", () => {
+  it("adds up stars across repos, and is 0 with no repos", () => {
+    expect(totalStars([])).toBe(0);
+    expect(
+      totalStars([
+        { ...repo(), stargazerCount: 120 },
+        { ...repo(), stargazerCount: 3 },
+      ]),
+    ).toBe(123);
   });
 });
 
@@ -294,6 +308,10 @@ describe("computeStats and personalityFor", () => {
     name: "Octo Cat",
     avatarUrl: "https://example.com/octo.png",
     contributionsCollection: {
+      totalCommitContributions: 5,
+      totalPullRequestContributions: 1,
+      totalPullRequestReviewContributions: 1,
+      totalIssueContributions: 0,
       contributionCalendar: {
         totalContributions: 7,
         // Mon 5 Jan to Sun 11 Jan 2026
@@ -308,7 +326,9 @@ describe("computeStats and personalityFor", () => {
         },
       ],
     },
-    repositories: { nodes: [repo(["TypeScript", 3], ["CSS", 1])] },
+    repositories: {
+      nodes: [{ ...repo(["TypeScript", 3], ["CSS", 1]), stargazerCount: 42 }],
+    },
   };
 
   it("puts every stat together", () => {
@@ -322,6 +342,8 @@ describe("computeStats and personalityFor", () => {
       busiestWeekday: 1, // Monday
       weekendShare: 2 / 7,
       topRepo: { name: "octo/app", commits: 4 },
+      activity: { commits: 5, pullRequests: 1, reviews: 1, issues: 0 },
+      stars: 42,
       pushTimes: ["2026-01-05T20:00:00Z"],
     });
     expect(stats.languages.map((l) => [l.name, l.percent])).toEqual([

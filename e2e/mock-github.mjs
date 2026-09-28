@@ -46,6 +46,11 @@ function user(login, name, active) {
     name,
     avatarUrl: AVATAR,
     contributionsCollection: {
+      // By type; these add up to the calendar total of 120.
+      totalCommitContributions: active ? 95 : 0,
+      totalPullRequestContributions: active ? 14 : 0,
+      totalPullRequestReviewContributions: active ? 8 : 0,
+      totalIssueContributions: active ? 3 : 0,
       contributionCalendar: calendar(active),
       commitContributionsByRepository: active
         ? [
@@ -64,6 +69,7 @@ function user(login, name, active) {
       nodes: active
         ? [
             {
+              stargazerCount: 1200,
               languages: {
                 edges: [
                   language("TypeScript", 6000, "#3178c6"),
@@ -71,7 +77,10 @@ function user(login, name, active) {
                 ],
               },
             },
-            { languages: { edges: [language("HTML", 2000, "#e34c26")] } },
+            {
+              stargazerCount: 34,
+              languages: { edges: [language("HTML", 2000, "#e34c26")] },
+            },
           ]
         : [],
     },

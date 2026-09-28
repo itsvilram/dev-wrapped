@@ -20,6 +20,10 @@ const USER_QUERY = /* GraphQL */ `
       name
       avatarUrl
       contributionsCollection {
+        totalCommitContributions
+        totalPullRequestContributions
+        totalPullRequestReviewContributions
+        totalIssueContributions
         contributionCalendar {
           totalContributions
           weeks {
@@ -39,8 +43,15 @@ const USER_QUERY = /* GraphQL */ `
           }
         }
       }
-      repositories(ownerAffiliations: OWNER, isFork: false, first: 100) {
+      # Most-starred first, so the 100 repos we read are the ones that matter.
+      repositories(
+        ownerAffiliations: OWNER
+        isFork: false
+        first: 100
+        orderBy: { field: STARGAZERS, direction: DESC }
+      ) {
         nodes {
+          stargazerCount
           languages(first: 10) {
             edges {
               size

@@ -13,6 +13,7 @@ import { useTimeZone } from "@/hooks/useTimeZone";
 import { personalityFor } from "@/lib/stats";
 import type { WrappedStats } from "@/lib/types";
 import { ProgressBars } from "./ProgressBars";
+import { ActivitySlide } from "./slides/ActivitySlide";
 import { ContributionsSlide } from "./slides/ContributionsSlide";
 import { HoursSlide } from "./slides/HoursSlide";
 import { IntroSlide } from "./slides/IntroSlide";
@@ -191,6 +192,11 @@ function buildSlides(stats: WrappedStats, timeZone: string | null): Slide[] {
       label: "Total contributions",
       background: "from-emerald-600 to-teal-950",
       content: <ContributionsSlide total={stats.totalContributions} />,
+    },
+    {
+      label: "Beyond the total",
+      background: "from-lime-600 to-green-950",
+      content: <ActivitySlide activity={stats.activity} stars={stats.stars} />,
     },
     {
       label: "Top languages",

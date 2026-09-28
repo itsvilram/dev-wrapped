@@ -14,8 +14,8 @@ const SATURDAY = 6;
 const SUNDAY = 0;
 
 export function computeStats({ user, pushTimes }: GitHubData): WrappedStats {
-  const { contributionCalendar, commitContributionsByRepository } =
-    user.contributionsCollection;
+  const collection = user.contributionsCollection;
+  const { contributionCalendar, commitContributionsByRepository } = collection;
   const days = flattenDays(contributionCalendar.weeks);
 
   return {
@@ -29,6 +29,13 @@ export function computeStats({ user, pushTimes }: GitHubData): WrappedStats {
     longestStreak: longestStreak(days),
     currentStreak: currentStreak(days),
     topRepo: topRepo(commitContributionsByRepository),
+    activity: {
+      commits: collection.totalCommitContributions,
+      pullRequests: collection.totalPullRequestContributions,
+      reviews: collection.totalPullRequestReviewContributions,
+      issues: collection.totalIssueContributions,
+    },
+    stars: totalStars(user.repositories.nodes),
     pushTimes,
   };
 }
@@ -86,6 +93,10 @@ export function languageShares(
       percent: (bytes / totalBytes) * 100,
     }))
     .sort((a, b) => b.bytes - a.bytes || a.name.localeCompare(b.name));
+}
+
+export function totalStars(repos: GitHubUser["repositories"]["nodes"]): number {
+  return repos.reduce((sum, repo) => sum + repo.stargazerCount, 0);
 }
 
 // Contributions per weekday; returns the weekday (0 = Sunday) with the most.

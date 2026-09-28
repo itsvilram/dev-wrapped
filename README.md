@@ -17,12 +17,13 @@
 
 1. Intro: avatar, name, "Your GitHub Wrapped"
 2. Total contributions in the last 12 months
-3. Top 3 languages, by bytes of code across public, non-fork repos
-4. Busiest coding hour (in the viewer's timezone) and busiest weekday
-5. Longest and current streak (days in a row with contributions)
-6. Most-contributed repo
-7. Coder personality: Night Owl, Early Bird, Weekend Warrior, Streak Machine, Polyglot or Steady Builder
-8. Summary card with **Download** and **Share** buttons
+3. What they are made of: commits, pull requests, code reviews and issues, plus stars on the user's repos
+4. Top 3 languages, by bytes of code across public, non-fork repos
+5. Busiest coding hour (in the viewer's timezone) and busiest weekday
+6. Longest and current streak (days in a row with contributions)
+7. Most-contributed repo
+8. Coder personality: Night Owl, Early Bird, Weekend Warrior, Streak Machine, Polyglot or Steady Builder
+9. Summary card with **Download** and **Share** buttons
 
 Navigate with a tap (left third goes back), the arrow keys, Space, or the on-screen buttons.
 
@@ -56,7 +57,7 @@ A longer write-up with an architecture diagram and the design trade-offs is in [
 - The busiest hour uses GitHub's public events API, which only returns about the **last 30 days** (max 300 events), and only public pushes.
 - Times are shown in the **viewer's** timezone, not the coder's (GitHub does not expose it). The link preview image has no viewer, so it uses UTC.
 - Organizations are not supported, only personal accounts.
-- Languages are measured over the user's first 100 non-fork repos, top 10 languages each.
+- Languages and stars are measured over the user's 100 most-starred non-fork repos, top 10 languages each.
 
 ## Run locally
 

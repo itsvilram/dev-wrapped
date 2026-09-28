@@ -10,7 +10,7 @@ export default function Loading() {
         className="absolute inset-x-0 top-0 flex gap-1.5 p-4"
         aria-hidden="true"
       >
-        {Array.from({ length: 8 }, (_, i) => (
+        {Array.from({ length: 9 }, (_, i) => (
           <div key={i} className="h-1 flex-1 rounded-full bg-white/30" />
         ))}
       </div>
