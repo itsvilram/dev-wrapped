@@ -45,10 +45,6 @@ next-env.d.ts
 prep/
 Plans/
 
-# agent instruction files that next dev generates
-AGENTS.md
-CLAUDE.md
-
 # playwright
 /test-results/
 /playwright-report/
